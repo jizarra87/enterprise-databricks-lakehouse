@@ -128,6 +128,45 @@ Delta optimization techniques implemented:
 
 ---
 
+# Data Quality Framework
+
+The platform includes a Data Quality validation framework designed to simulate enterprise-grade governance and resiliency patterns.
+
+## Validation Rules
+
+The pipeline validates:
+
+* Null business keys
+* Invalid quantities
+* Negative prices
+* Invalid total amounts
+* Missing order dates
+
+## Quarantine Pattern
+
+Invalid records are automatically redirected into quarantine tables for auditing and remediation instead of being discarded.
+
+### Valid Records
+
+```text
+silver.orders_validated
+```
+
+### Invalid Records
+
+```text
+silver.quarantine_orders
+```
+
+This pattern improves:
+
+* Data trust
+* Recoverability
+* Governance
+* Auditability
+* Pipeline resiliency
+
+
 # Unity Catalog Organization
 
 ```text

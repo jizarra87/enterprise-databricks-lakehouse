@@ -55,6 +55,26 @@ for order_id in range(1, NUM_ORDERS + 1):
         "created_at": datetime.now()
     })
 
+orders.append({
+    "order_id": None,
+    "customer_id": 9999,
+    "order_date": None,
+    "quantity": -5,
+    "unit_price": -100,
+    "total_amount": -500,
+    "created_at": datetime.now()
+})
+
+orders.append({
+    "order_id": 999999,
+    "customer_id": None,
+    "order_date": fake.date_this_year(),
+    "quantity": 0,
+    "unit_price": 0,
+    "total_amount": 0,
+    "created_at": datetime.now()
+})
+
 df_orders = pd.DataFrame(orders)
 
 df_orders.to_csv(
