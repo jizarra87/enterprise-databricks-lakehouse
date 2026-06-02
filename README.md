@@ -2,212 +2,179 @@
 
 ## Overview
 
-This project demonstrates the design and implementation of a modern enterprise-grade lakehouse architecture using Databricks, Delta Lake, and PySpark following Medallion Architecture principles (Bronze, Silver, Gold).
+This project demonstrates the implementation of a modern enterprise lakehouse architecture using Databricks, Delta Lake, PySpark, and Unity Catalog.
 
-The platform is designed to simulate real-world enterprise data engineering and analytics workloads, focusing on scalability, governance, performance, observability, and AI-ready data architecture patterns commonly used in modern cloud ecosystems.
+The platform follows a Medallion Architecture approach (Bronze → Silver → Gold) and simulates a real-world retail analytics environment with scalable ingestion pipelines, incremental processing, orchestration workflows, and analytical fact/dimension modeling.
 
-This repository is intentionally structured to reflect production-oriented engineering practices rather than tutorial-style development.
-
----
-
-# Objectives
-
-The primary goals of this project are:
-
-- Build an enterprise-style Databricks lakehouse platform
-- Implement scalable ETL/ELT pipelines using PySpark
-- Apply Medallion Architecture best practices
-- Design Delta Lake-based storage and transformation patterns
-- Simulate enterprise governance and DataOps workflows
-- Create analytics-ready and AI-ready curated datasets
-- Demonstrate modern cloud data engineering architecture patterns
+The project was designed to emulate production-grade data engineering patterns commonly used in modern cloud analytics platforms.
 
 ---
 
 # Architecture
 
-The platform follows a layered Medallion Architecture:
-
-## Bronze Layer
-Raw ingestion layer preserving source fidelity.
-
-- Incremental ingestion
-- Schema evolution handling
-- Raw historical retention
-- Audit metadata capture
-
-## Silver Layer
-Cleansed and standardized enterprise data layer.
-
-- Data quality validation
-- Standardization
-- Deduplication
-- Business rule enforcement
-- Conformed entities
-
-## Gold Layer
-Business-ready analytical layer.
-
-- Star schema modeling
-- Aggregated KPIs
-- Reporting datasets
-- AI/ML-ready feature datasets
-
----
-
-# Core Technologies
-
-| Technology | Purpose |
-|---|---|
-| Azure Databricks | Distributed data processing platform |
-| Delta Lake | ACID-compliant lakehouse storage |
-| PySpark | Scalable data transformations |
-| Azure Data Lake Storage (ADLS) | Enterprise cloud storage |
-| GitHub | Source control |
-| GitHub Actions | CI/CD pipelines |
-| dbt *(future phase)* | Data transformation framework |
-| Power BI / Microsoft Fabric *(future phase)* | Analytics and semantic modeling |
-
----
-
-# Key Engineering Concepts
-
-This project focuses heavily on enterprise data engineering concepts including:
-
-- Medallion Architecture
-- Delta Lake patterns
-- Data partitioning strategies
-- Incremental processing
-- Enterprise data modeling
-- Data governance
-- CI/CD for data platforms
-- Observability and monitoring
-- Lakehouse architecture
-- AI-ready data design
-- Data quality frameworks
-- Metadata-driven pipelines
-
----
-
-# Repository Structure
+## Medallion Architecture
 
 ```text
-enterprise-databricks-lakehouse/
-│
-├── architecture/
-│   ├── diagrams/
-│   └── decisions/
-│
-├── configs/
-│
-├── data/
-│   ├── raw/
-│   ├── bronze/
-│   ├── silver/
-│   └── gold/
-│
-├── docs/
-│
-├── notebooks/
-│   ├── bronze/
-│   ├── silver/
-│   └── gold/
-│
-├── pipelines/
-│
-├── src/
-│   ├── ingestion/
-│   ├── orchestration/
-│   ├── quality/
-│   ├── transformations/
-│   └── utils/
-│
-├── tests/
-│
-├── requirements.txt
-├── README.md
-└── .gitignore
+Raw CSV Files
+    ↓
+Bronze Layer
+    ↓
+Silver Layer
+    ↓
+Gold Layer
+```
+
+### Bronze Layer
+
+* Raw ingestion layer
+* Metadata enrichment
+* Incremental ingestion
+* Source traceability
+
+### Silver Layer
+
+* Cleansing and standardization
+* Deduplication
+* Business validation rules
+* Data quality improvements
+
+### Gold Layer
+
+* Dimensional modeling
+* Fact and dimension tables
+* KPI-ready analytical datasets
+* BI and reporting optimized structures
+
+---
+
+# Technologies Used
+
+* Databricks
+* PySpark
+* Delta Lake
+* Unity Catalog
+* SQL
+* Python
+* Delta MERGE
+* Databricks Workflows
+* Delta Optimization (OPTIMIZE / ZORDER)
+* Medallion Architecture
+
+---
+
+# Data Model
+
+## Dimensions
+
+* `gold.dim_customers`
+
+## Fact Tables
+
+* `gold.fact_sales`
+
+---
+
+# Pipeline Components
+
+## Customer Pipeline
+
+```text
+bronze_customers_ingestion
+    ↓
+silver_customers_transformation
+    ↓
+gold_customers_dimension
+```
+
+## Orders Pipeline
+
+```text
+bronze_orders_ingestion
+    ↓
+silver_orders_transformation
+    ↓
+gold_fact_sales
 ```
 
 ---
 
-# Planned Project Phases
+# Incremental Processing
 
-## Phase 1 — Foundation
-- Repository setup
-- Architecture definition
-- Environment configuration
-- Dataset strategy
+The project includes incremental loading patterns using Delta Lake `MERGE INTO` operations to simulate enterprise-grade upsert pipelines.
 
-## Phase 2 — Bronze Layer
-- Raw ingestion pipelines
-- Incremental loading
-- Delta bronze tables
+Capabilities demonstrated:
 
-## Phase 3 — Silver Layer
-- Data cleansing
-- Standardization
-- Data quality enforcement
-
-## Phase 4 — Gold Layer
-- Dimensional modeling
-- KPI generation
-- Business-ready datasets
-
-## Phase 5 — Orchestration
-- Databricks Workflows
-- Scheduling
-- Monitoring
-
-## Phase 6 — DataOps & CI/CD
-- GitHub Actions
-- Automated testing
-- Deployment workflows
-
-## Phase 7 — Governance & Security
-- Unity Catalog concepts
-- Data lineage
-- Role-based access patterns
-
-## Phase 8 — AI Enablement
-- AI-ready curated datasets
-- Vector-ready architecture
-- RAG integration concepts
+* Incremental ingestion
+* Upserts
+* Transactional processing
+* Delta Lake ACID operations
 
 ---
 
-# Design Philosophy
+# Workflow Orchestration
 
-This project prioritizes:
+Databricks Workflows were implemented to orchestrate notebook dependencies and automate pipeline execution across Bronze, Silver, and Gold layers.
 
-- Scalability
-- Maintainability
-- Governance
-- Operational reliability
-- Clear architectural standards
-- Enterprise engineering practices
+---
 
-The goal is to simulate the type of data platform architecture commonly found in modern enterprise environments using Databricks and cloud-native technologies.
+# Performance Optimization
+
+Delta optimization techniques implemented:
+
+* OPTIMIZE
+* ZORDER
+* Delta transaction history
+* File compaction strategies
+
+---
+
+# Unity Catalog Organization
+
+```text
+enterprise_lakehouse
+    ├── bronze
+    ├── silver
+    └── gold
+```
+
+---
+
+# Screenshots
+
+## Workflow DAG
+
+![Workflow DAG](docs/architecture/screenshots/workflow_dag.png)
+
+## Unity Catalog
+
+![Unity Catalog](docs/architecture/screenshots/unity_catalog.png)
+
+## Fact Sales Table
+
+![Fact Sales](docs/architecture/screenshots/fact_sales.png)
 
 ---
 
 # Future Enhancements
 
-Potential future enhancements include:
-
-- Real-time streaming pipelines
-- Kafka integration
-- CDC ingestion patterns
-- Data observability dashboards
-- MLOps integration
-- Vector databases
-- AI agent integration
-- Semantic search architecture
+* CDC pipelines
+* Slowly Changing Dimensions (SCD)
+* dbt integration
+* Data Quality framework
+* Streaming ingestion
+* CI/CD automation
+* Terraform infrastructure deployment
+* Monitoring and alerting
 
 ---
 
-# Author
+# Project Goals
 
-Juan Izarra
+This project was built to demonstrate practical experience with:
 
-Enterprise Data Engineering | Data Architecture | AI & Analytics Platforms
+* Modern Data Engineering
+* Databricks Lakehouse Architecture
+* Enterprise ETL Design
+* Delta Lake Transactional Processing
+* Scalable Analytics Engineering
+* Production-style Workflow Orchestration
