@@ -1,0 +1,10 @@
+enterprise_lakehouse_dbt:
+
+  target: dev
+
+  outputs:
+
+    dev:
+      type: duckdb
+      path: enterprise_lakehouse.duckdb
+      threads: 1

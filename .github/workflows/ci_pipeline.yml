@@ -34,15 +34,16 @@ jobs:
       - name: Validate Python Files
         run: |
           python -m compileall src/
-      - name: Run dbt Models
-        run: |
+
+            - name: Run dbt Models
+      - run: |
           cd enterprise_lakehouse_dbt
-          dbt run
+          dbt run --profiles-dir profiles
 
       - name: Run dbt Tests
         run: |
           cd enterprise_lakehouse_dbt
-          dbt test
+          dbt test --profiles-dir profiles
 
       - name: Validate Notebook Structure
         run: |
