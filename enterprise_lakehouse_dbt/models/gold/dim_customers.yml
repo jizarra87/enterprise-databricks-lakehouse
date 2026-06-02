@@ -1,0 +1,26 @@
+version: 2
+
+models:
+  - name: dim_customers
+    description: Customer dimension table for analytics and reporting.
+
+    columns:
+
+      - name: customer_id
+        description: Unique customer identifier.
+
+        tests:
+          - not_null
+          - unique
+
+      - name: email
+        description: Customer email address.
+
+        tests:
+          - not_null
+
+      - name: first_name
+        description: Customer first name.
+
+      - name: last_name
+        description: Customer last name.

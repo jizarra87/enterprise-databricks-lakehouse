@@ -4,3 +4,4 @@ pandas
 pyarrow
 faker
 pytest
+dbt-duckdb
