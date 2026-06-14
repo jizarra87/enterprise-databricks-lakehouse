@@ -1,0 +1,67 @@
+bundle:
+  name: enterprise-databricks-lakehouse
+
+variables:
+  catalog:
+    default: enterprise_lakehouse
+
+targets:
+  dev:
+    mode: development
+    default: true
+    variables:
+      catalog: enterprise_lakehouse_dev
+
+  test:
+    mode: development
+    variables:
+      catalog: enterprise_lakehouse_test
+
+  prod:
+    mode: production
+    variables:
+      catalog: enterprise_lakehouse_prod
+
+resources:
+  jobs:
+    retail_lakehouse_pipeline:
+      name: retail-lakehouse-pipeline-${bundle.target}
+      tasks:
+        - task_key: bronze_customers_ingestion
+          notebook_task:
+            notebook_path: ./notebooks/bronze/bronze_customers_ingestion.py
+
+        - task_key: bronze_orders_ingestion
+          notebook_task:
+            notebook_path: ./notebooks/bronze/bronze_orders_ingestion.py
+
+        - task_key: silver_customers_transformation
+          depends_on:
+            - task_key: bronze_customers_ingestion
+          notebook_task:
+            notebook_path: ./notebooks/silver/silver_customers_transformation.py
+
+        - task_key: silver_orders_transformation
+          depends_on:
+            - task_key: bronze_orders_ingestion
+          notebook_task:
+            notebook_path: ./notebooks/silver/silver_orders_transformation.py
+
+        - task_key: silver_orders_incremental_merge
+          depends_on:
+            - task_key: silver_orders_transformation
+          notebook_task:
+            notebook_path: ./notebooks/silver/silver_orders_incremental_merge.py
+
+        - task_key: gold_customer_dimension
+          depends_on:
+            - task_key: silver_customers_transformation
+          notebook_task:
+            notebook_path: ./notebooks/gold/gold_customer_dimension.py
+
+        - task_key: gold_fact_sales
+          depends_on:
+            - task_key: silver_orders_incremental_merge
+            - task_key: gold_customer_dimension
+          notebook_task:
+            notebook_path: ./notebooks/gold/gold_fact_sales.py
