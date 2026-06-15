@@ -4,6 +4,7 @@ from pyspark.sql.functions import (
     year,
     month
 )
+from pyspark.sql.types import LongType
 
 orders_df = spark.table("enterprise_lakehouse.silver.orders")
 
@@ -31,9 +32,15 @@ fact_sales_df = (
     )
 )
 
-display(fact_sales_df)
+
+fact_sales_df = (
+    fact_sales_df.withColumn("order_id", col("order_id").cast(LongType()))
+    .withColumn("customer_id", col("customer_id").cast(LongType()))    
+)
+
 
 fact_sales_df.write \
     .format("delta") \
     .mode("overwrite") \
+    .option("overwriteSchema", "true") \
     .saveAsTable("enterprise_lakehouse.gold.fact_sales")

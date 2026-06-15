@@ -1,3 +1,5 @@
+{{ config(materialized='table') }}
+
 select
     customer_id,
     first_name,
@@ -7,5 +9,4 @@ select
     state,
     country,
     created_at
-
-from read_csv_auto('../data/raw/customers.csv')
+from enterprise_lakehouse.silver.customers
