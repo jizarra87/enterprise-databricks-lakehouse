@@ -58,3 +58,21 @@ def orders_bronze():
 def orders_silver():
 
     return dlt.read("orders_bronze")
+
+@dlt.table(
+    name="orders_quarantine",
+    comment="Rejected records failing validation rules."
+)
+def orders_quarantine():
+
+    return (
+        dlt.read("orders_bronze")
+        .filter(
+            """
+            order_id IS NULL
+            OR customer_id IS NULL
+            OR quantity <= 0
+            OR total_amount <= 0
+            """
+        )
+    )

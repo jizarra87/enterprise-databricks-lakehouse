@@ -23,6 +23,19 @@ targets:
       catalog: enterprise_lakehouse_prod
 
 resources:
+  pipelines:
+    orders_dlt_pipeline:
+      name: orders-dlt-${bundle.target}
+
+      catalog: ${var.catalog}
+
+      target: bronze
+      serverless: true 
+      libraries:
+        - file:
+            path: ./dlt/orders_pipeline.py
+
+      development: true
   jobs:
     retail_lakehouse_pipeline:
       name: retail-lakehouse-pipeline-${bundle.target}
