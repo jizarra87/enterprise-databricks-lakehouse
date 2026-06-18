@@ -1,0 +1,106 @@
+bundle:
+  name: enterprise-databricks-lakehouse
+
+variables:
+  catalog:
+    default: enterprise_lakehouse
+
+targets:
+  dev:
+    mode: development
+    default: true
+    variables:
+      catalog: enterprise_lakehouse_dev
+
+  test:
+    mode: development
+    variables:
+      catalog: enterprise_lakehouse_test
+
+  prod:
+    mode: production
+    variables:
+      catalog: enterprise_lakehouse_prod
+
+resources:
+  pipelines:
+    bronze_orders_dlt_pipeline:
+      name: bronze-orders-dlt-${bundle.target}
+      catalog: ${var.catalog}
+      target: bronze
+      serverless: true
+      libraries:
+        - file:
+            path: ./dlt/bronze/orders_bronze_pipeline.py
+      development: true
+
+    bronze_customers_dlt_pipeline:
+      name: bronze-customers-dlt-${bundle.target}
+      catalog: ${var.catalog}
+      target: bronze
+      serverless: true
+      libraries:
+        - file:
+            path: ./dlt/bronze/customers_bronze_pipeline.py
+      development: true
+
+    silver_orders_dlt_pipeline:
+      name: silver-orders-dlt-${bundle.target}
+      catalog: ${var.catalog}
+      target: silver
+      serverless: true
+      libraries:
+        - file:
+            path: ./dlt/silver/orders_silver_pipeline.py
+      development: true
+
+    silver_customers_dlt_pipeline:
+      name: silver-customers-dlt-${bundle.target}
+      catalog: ${var.catalog}
+      target: silver
+      serverless: true
+      libraries:
+        - file:
+            path: ./dlt/silver/customers_silver_pipeline.py
+      development: true
+  jobs:
+    retail_lakehouse_pipeline:
+      name: retail-lakehouse-pipeline-${bundle.target}
+      environments:
+        - environment_key: dbt_environment
+          spec:
+            client: "2"
+            dependencies:
+              - dbt-databricks
+
+      tasks:
+        - task_key: bronze_orders_dlt
+          pipeline_task:
+            pipeline_id: ${resources.pipelines.bronze_orders_dlt_pipeline.id}
+
+        - task_key: bronze_customers_dlt
+          depends_on:
+            - task_key: bronze_orders_dlt
+          pipeline_task:
+            pipeline_id: ${resources.pipelines.bronze_customers_dlt_pipeline.id}
+
+        - task_key: silver_orders_dlt
+          depends_on:
+            - task_key: bronze_customers_dlt
+          pipeline_task:
+            pipeline_id: ${resources.pipelines.silver_orders_dlt_pipeline.id}
+
+        - task_key: silver_customers_dlt
+          depends_on:
+            - task_key: silver_orders_dlt
+          pipeline_task:
+            pipeline_id: ${resources.pipelines.silver_customers_dlt_pipeline.id}
+
+        - task_key: run_dbt_gold
+          depends_on:
+            - task_key: silver_orders_dlt
+            - task_key: silver_customers_dlt
+          notebook_task:
+            notebook_path: ./notebooks/gold/run_dbt_gold.py
+            base_parameters:
+              catalog: ${var.catalog}

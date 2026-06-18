@@ -1,10 +1,11 @@
 enterprise_lakehouse_dbt:
-
   target: dev
-
   outputs:
-
     dev:
-      type: duckdb
-      path: enterprise_lakehouse.duckdb
-      threads: 1
+      type: databricks
+      catalog: "{{ env_var('DBT_CATALOG') }}"
+      schema: gold
+      host: dbc-0648a16c-7e81.cloud.databricks.com
+      http_path: /sql/1.0/warehouses/36fbeecf717cead4
+      token: "{{ env_var('DATABRICKS_TOKEN') }}"
+      threads: 4

@@ -1,0 +1,51 @@
+version: 2
+
+models:
+  - name: fact_sales
+    description: Sales fact table built from silver orders joined with silver customers.
+    columns:
+      - name: order_id
+        description: Unique order identifier.
+        tests:
+          - not_null
+          - unique
+
+      - name: customer_id
+        description: Customer identifier associated with the order.
+        tests:
+          - not_null
+
+      - name: order_date
+        description: Date when the order was placed.
+        tests:
+          - not_null
+
+      - name: order_year
+        description: Year extracted from order_date.
+
+      - name: order_month
+        description: Month extracted from order_date.
+
+      - name: quantity
+        description: Number of units sold.
+        tests:
+          - not_null
+
+      - name: unit_price
+        description: Unit price of the item sold.
+        tests:
+          - not_null
+
+      - name: total_amount
+        description: Total sales amount for the order.
+        tests:
+          - not_null
+
+      - name: city
+        description: Customer city.
+
+      - name: state
+        description: Customer state.
+
+      - name: country
+        description: Customer country.
