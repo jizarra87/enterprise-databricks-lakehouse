@@ -3,7 +3,7 @@ enterprise_lakehouse_dbt:
   outputs:
     dev:
       type: databricks
-      catalog: enterprise_lakehouse
+      catalog: "{{ env_var('DBT_CATALOG') }}"
       schema: gold
       host: dbc-0648a16c-7e81.cloud.databricks.com
       http_path: /sql/1.0/warehouses/36fbeecf717cead4

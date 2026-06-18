@@ -1,5 +1,4 @@
 import dlt
-
 from pyspark.sql.functions import (
     current_timestamp,
     lit,
@@ -7,7 +6,7 @@ from pyspark.sql.functions import (
 )
 
 @dlt.table(
-    name="orders_bronze",
+    name="orders",
     comment="Bronze orders table ingested from raw CSV files."
 )
 def orders_bronze():
@@ -33,46 +32,4 @@ def orders_bronze():
         .withColumn("ingestion_timestamp", current_timestamp())
         .withColumn("source_system", lit("ecommerce"))
         .withColumn("ingestion_layer", lit("bronze"))
-    )
-
-@dlt.table(
-    name="orders_silver",
-    comment="Validated orders table."
-)
-@dlt.expect_or_drop(
-    "valid_order_id",
-    "order_id IS NOT NULL"
-)
-@dlt.expect_or_drop(
-    "valid_customer_id",
-    "customer_id IS NOT NULL"
-)
-@dlt.expect_or_drop(
-    "positive_quantity",
-    "quantity > 0"
-)
-@dlt.expect_or_drop(
-    "positive_amount",
-    "total_amount > 0"
-)
-def orders_silver():
-
-    return dlt.read("orders_bronze")
-
-@dlt.table(
-    name="orders_quarantine",
-    comment="Rejected records failing validation rules."
-)
-def orders_quarantine():
-
-    return (
-        dlt.read("orders_bronze")
-        .filter(
-            """
-            order_id IS NULL
-            OR customer_id IS NULL
-            OR quantity <= 0
-            OR total_amount <= 0
-            """
-        )
     )

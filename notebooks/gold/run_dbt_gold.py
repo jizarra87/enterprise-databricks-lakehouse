@@ -7,8 +7,17 @@ import subprocess
 
 token = dbutils.secrets.get(scope="dbt", key="databricks_token")
 os.environ["DATABRICKS_TOKEN"] = token
+os.environ["DBT_CATALOG"] = dbutils.widgets.get("catalog")
 
-project_dir = "/Workspace/Users/juancarlosizarra@gmail.com/.bundle/enterprise-databricks-lakehouse/dev/files/enterprise_lakehouse_dbt"
+import os
+
+notebook_path = dbutils.notebook.entry_point.getDbutils().notebook().getContext().notebookPath().get()
+bundle_root = "/Workspace" + "/".join(notebook_path.split("/")[:-3])
+project_dir = f"{bundle_root}/enterprise_lakehouse_dbt"
+
+print(f"Notebook path: {notebook_path}")
+print(f"Bundle root: {bundle_root}")
+print(f"Project dir: {project_dir}")
 
 commands = [
     ["dbt", "run", "--profiles-dir", "profiles", "--select", "dim_customers", "fact_sales"],
